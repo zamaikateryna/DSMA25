@@ -643,10 +643,10 @@ bag_wflow <- workflow() %>%
   add_recipe(rec)
 
 bag_grid <- grid_space_filling(
-  mtry(range = c(1, 3)),          # Since we have 3 predictors
-  trees(range = c(100, 500)),
-  min_n(range = c(2, 10)),
-  size = 15
+  mtry(range = c(1, 3)),
+  trees(range = c(500, 3000)),  
+  min_n(range = c(1, 20)),      
+  size = 50                    
 )
 tuned_bag_results <- tune_grid(
   bag_wflow,
@@ -655,7 +655,7 @@ tuned_bag_results <- tune_grid(
   metrics = metric_set(accuracy, f_meas, roc_auc)
 )
 
-best_bag <- select_best(tuned_bag_results, metric = "f_meas")
+best_bag <- select_best(tuned_bag_results, metric = "roc_auc")
 final_bag_wflow <- finalize_workflow(bag_wflow, best_bag)
 final_bag_fit <- fit(final_bag_wflow, x.train_balanced) # Fitting on full training data
 
